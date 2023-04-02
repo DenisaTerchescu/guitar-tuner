@@ -1,7 +1,7 @@
 Pentru instalare si rulare:
 
 creeaza env: python -m venv env   (*executa o singura data)
-porneste env: source env/bin/activate 
+porneste env: ./env/bin/activate 
 pip install -r requirements.txt
 
 
