@@ -46,7 +46,7 @@ def callback(indata, frames, time, status, update_label):
         return
 
     # Check if there's input data
-    if any(indata):
+    if indata.any():
         # Add new samples and remove old samples
         callback.window_samples = np.concatenate(
             (callback.window_samples, indata[:, 0]))
@@ -133,7 +133,8 @@ def main():
         try:
             print("Starting HPS guitar tuner...")
             print(sd.query_devices())
-            with sd.InputStream(channels=1, callback=lambda *args, **kwargs: callback(*args, **kwargs, update_label=update_label), blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ, device=4):
+            with sd.InputStream(channels=2, callback=lambda *args, **kwargs: callback(*args, **kwargs, update_label=update_label), 
+                                blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
                 while True:
                     time.sleep(0.5)
         except Exception as exc:
