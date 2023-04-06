@@ -4,8 +4,8 @@ import copy
 import numpy as np
 import scipy.fftpack
 import sounddevice as sd
-import tkinter as tk
-from tkinter import ttk
+import customtkinter as tk
+# from customtkinter import ctk
 from typing import Tuple
 import threading
 
@@ -146,19 +146,19 @@ def main():
         tuner_thread.start()
 
     # Initialize the Tkinter window
-    root = tk.Tk()
+    root = tk.CTk()
     root.title("Guitar Tuner")
     root.geometry("400x200")
 
     # Add a label to display the closest note
     label_text = tk.StringVar()
     label_text.set("Closest note: ...")
-    label = ttk.Label(root, textvariable=label_text)
+    label = tk.CTkLabel(root, textvariable=label_text)
     # label.pack(pady=10)
     label.grid(row=0, column=0, padx=20, pady=20)
 
     # Add a button to start the tuner
-    start_button = ttk.Button(root, text="Start Tuner",
+    start_button = tk.CTkButton(root, text="Start Tuner",
                               command=start_tuner_thread)
     # start_button.pack(pady=10)
     start_button.grid(row=1, column=0, padx=20, pady=20)
