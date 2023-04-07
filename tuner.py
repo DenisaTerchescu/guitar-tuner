@@ -5,7 +5,7 @@ import numpy as np
 import scipy.fftpack
 import sounddevice as sd
 import customtkinter as tk
-# from customtkinter import ctk
+from PIL import ImageTk, Image  
 from typing import Tuple
 import threading
 
@@ -148,25 +148,38 @@ def main():
     # Initialize the Tkinter window
     root = tk.CTk()
     root.title("Guitar Tuner")
-    root.geometry("400x200")
+    root.geometry("500x700")
+    tk.set_appearance_mode("dark")
+    tk.set_default_color_theme("green")
+    # frame = tk.CTkFrame(master=root)
+    # frame.pack()
 
     # Add a label to display the closest note
     label_text = tk.StringVar()
     label_text.set("Closest note: ...")
-    label = tk.CTkLabel(root, textvariable=label_text)
-    # label.pack(pady=10)
-    label.grid(row=0, column=0, padx=20, pady=20)
+    label = tk.CTkLabel(root, textvariable=label_text, font=("Roboto", 24))
 
+    # label.pack(pady=10)
+    label.grid(row=0, padx=50, pady=0)
+
+    # Create an object of tkinter ImageTk
+    img = ImageTk.PhotoImage(Image.open("sing.png"), height=100)
+
+    # Create a Label Widget to display the text or Image
+    label1 = tk.CTkLabel(root, image=img, text="")
+    label1.grid(row=1,padx=20, pady=0, columnspan=1, rowspan=1)
+    
     # Add a button to start the tuner
     start_button = tk.CTkButton(root, text="Start Tuner",
-                              command=start_tuner_thread)
+                              command=start_tuner_thread, width=300, height=50)
     # start_button.pack(pady=10)
-    start_button.grid(row=1, column=0, padx=20, pady=20)
+    start_button.grid(row=2, rowspan=5, columnspan=5, padx=0, pady=10)
 
    # Configure grid layout weights
     root.grid_columnconfigure(0, weight=1)
     root.grid_rowconfigure(0, weight=1)
     root.grid_rowconfigure(1, weight=1)
+    root.grid_rowconfigure(2, weight=1)
     
     root.mainloop()
 
