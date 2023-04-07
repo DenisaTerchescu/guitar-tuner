@@ -151,9 +151,7 @@ def main():
     root.geometry("500x700")
     tk.set_appearance_mode("dark")
     tk.set_default_color_theme("green")
-    # frame = tk.CTkFrame(master=root)
-    # frame.pack()
-
+   
     # Add a label to display the closest note
     label_text = tk.StringVar()
     label_text.set("Closest note: ...")
@@ -166,8 +164,8 @@ def main():
     img = ImageTk.PhotoImage(Image.open("sing.png"), height=100)
 
     # Create a Label Widget to display the text or Image
-    label1 = tk.CTkLabel(root, image=img, text="")
-    label1.grid(row=1,padx=20, pady=0, columnspan=1, rowspan=1)
+    label_img = tk.CTkLabel(root, image=img, text="")
+    label_img.grid(row=1,padx=20, pady=0, columnspan=1, rowspan=1)
     
     # Add a button to start the tuner
     start_button = tk.CTkButton(root, text="Start Tuner",
