@@ -1,6 +1,6 @@
 For installing and running the project:
 
-To create the environment: python -m venv env   (only once)
+To create the env: python -m venv env   (only once)
 
 For starting the env: ./env/bin/activate 
 
@@ -16,6 +16,11 @@ Listening stance:
 
 
 Python version: 3.10.x
+
+ **Bibliography:**
+ * https://www.chciken.com/digital/signal/processing/2020/05/13/guitar-tuner.html
+ * https://medium.com/@fareedkhandev/modern-gui-using-tkinter-12da0b983e22
+ * https://pythonnumericalmethods.berkeley.edu/notebooks/chapter24.02-Discrete-Fourier-Transform.html
 
 
 
