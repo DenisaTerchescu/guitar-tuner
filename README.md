@@ -1,8 +1,8 @@
-Pentru instalare si rulare:
+For installing and running the project:
 
-creeaza env: python -m venv env   (*executa o singura data)
+To create the environment: python -m venv env   (only once)
 
-porneste env: ./env/bin/activate 
+For starting the env: ./env/bin/activate 
 
 pip install -r requirements.txt
 
@@ -15,6 +15,7 @@ Listening stance:
 ![image](https://user-images.githubusercontent.com/96659100/236038307-4715e612-4965-45c8-9f29-ddfef2cca05d.png)
 
 
-versiune python: 3.10.x
+Python version: 3.10.x
+
 
 
