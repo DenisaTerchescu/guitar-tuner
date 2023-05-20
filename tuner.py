@@ -19,7 +19,7 @@ CONCERT_PITCH = 440  # Defining A4
 WHITE_NOISE_THRESH = 0.2
 
 OCTAVE_BANDS = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
-ALL_NOTES = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+ALL_NOTES = ["LA", "LA#", "SI", "DO", "DO#", "RE", "RE#", "MI", "FA", "FA#", "SOL", "SOL#"]
 HANN_WINDOW = np.hanning(WINDOW_SIZE)
 DELTA_FREQ = SAMPLE_FREQ / WINDOW_SIZE
 
@@ -76,6 +76,7 @@ def callback(indata, frames, time, status, update_label):
         signal_power = (np.linalg.norm(callback.window_samples, ord=2, axis=0)**2) / len(callback.window_samples)
         if signal_power < POWER_THRESH:
             os.system('cls' if os.name == 'nt' else 'clear')
+
             print("Closest note: ...")
             return
 
