@@ -27,7 +27,6 @@ DELTA_FREQ = SAMPLE_FREQ / WINDOW_SIZE
 tuner_running = False
 
 def find_closest_note(pitch: float) -> Tuple[str, float]:
-    tm.sleep(1)
     """
     Find the closest note for a given pitch.
 
@@ -39,7 +38,7 @@ def find_closest_note(pitch: float) -> Tuple[str, float]:
     # semitones = 12 * log2(pitch / CONCERT_PITCH)
     i = int(np.round(np.log2(pitch / CONCERT_PITCH) * 12))
     print("Step 8: Calculating the semitone = 12 * log2(pitch / CONCERT_PITCH): " + str(i))
-    tm.sleep(1)
+    tm.sleep(0.5)
 
     # The '+ 9' term is used to correctly adjust the octave when dealing with negative indices.
     closest_note = ALL_NOTES[i % 12] + str(4 + (i + 9) // 12)
@@ -50,7 +49,6 @@ def find_closest_note(pitch: float) -> Tuple[str, float]:
     # concert pitch (A4 = 440Hz) by multiplying the concert pitch by the 2^(i / 12) factor.
     closest_pitch = CONCERT_PITCH * 2**(i / 12)
     print("Step 9: Calculating the frequency of the closest pitch with 2^(semitone / 12):  " + str(closest_pitch))
-    tm.sleep(3)
 
     return closest_note, closest_pitch
 
@@ -81,7 +79,6 @@ def callback(indata, frames, time, status, update_label):
         signal_power = (np.linalg.norm(callback.window_samples, ord=2, axis=0)**2) / len(callback.window_samples)
         if signal_power < POWER_THRESH:
             os.system('cls' if os.name == 'nt' else 'clear')
-
             print("The closest note: ...")
             return
 
