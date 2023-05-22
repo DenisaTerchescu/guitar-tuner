@@ -8,6 +8,13 @@ import customtkinter as tk
 from PIL import ImageTk, Image
 from typing import Tuple
 import threading
+import argparse
+
+# slowing down the algorithm to show the steps
+parser = argparse.ArgumentParser()
+parser.add_argument('-slow', action='store_true')
+args = parser.parse_args()
+
 
 # Tuner settings
 SAMPLE_FREQ = 48000  # Sample frequency in Hz
@@ -38,7 +45,6 @@ def find_closest_note(pitch: float) -> Tuple[str, float]:
     # semitones = 12 * log2(pitch / CONCERT_PITCH)
     i = int(np.round(np.log2(pitch / CONCERT_PITCH) * 12))
     print("Step 8: Calculating the semitone = 12 * log2(pitch / CONCERT_PITCH): " + str(i))
-    # tm.sleep(0.5)
 
     # The '+ 9' term is used to correctly adjust the octave when dealing with negative indices.
     closest_note = ALL_NOTES[i % 12] + str(4 + (i + 9) // 12)
@@ -49,7 +55,8 @@ def find_closest_note(pitch: float) -> Tuple[str, float]:
     # concert pitch (A4 = 440Hz) by multiplying the concert pitch by the 2^(i / 12) factor.
     closest_pitch = CONCERT_PITCH * 2**(i / 12)
     print("Step 9: Calculating the frequency of the closest pitch with 2^(semitone / 12):  " + str(closest_pitch))
-
+    if args.slow:
+        tm.sleep(5)
     return closest_note, closest_pitch
 
 def callback(indata, frames, time, status, update_label):
@@ -85,18 +92,22 @@ def callback(indata, frames, time, status, update_label):
         # Apply Hanning window to avoid spectral leakage
         hann_samples = callback.window_samples * HANN_WINDOW
         print("Step 1: Applying Hanning window in order to prevent spectral leakage")
-        tm.sleep(1)
+        if args.slow:
+            tm.sleep(1)
         magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples) // 2])
         print("Step 2: Calculating the magnitude spectrum: " + str(magnitude_spec))
-        tm.sleep(1)
+        if args.slow:
+            tm.sleep(1)
         # Remove anything below 62 Hz
         magnitude_spec[:int(62 / DELTA_FREQ)] = 0
         print("Step 3: Removing anything below the frequency of 62Hz")
-        tm.sleep(1)       
+        if args.slow:
+            tm.sleep(1)     
 
         # Calculate average energy for each octave band and remove noise below threshold
         print("Step 4: Calculate average energy for each octave band and remove noise below threshold")
-        tm.sleep(1)
+        if args.slow:
+            tm.sleep(1)
         for j in range(len(OCTAVE_BANDS) - 1):
             # Calculate the start and end indices in the magnitude spectrum for the current octave band.
             ind_start = int(OCTAVE_BANDS[j] / DELTA_FREQ)
@@ -115,12 +126,14 @@ def callback(indata, frames, time, status, update_label):
         mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1 / NUM_HPS), np.arange(0, len(magnitude_spec)), magnitude_spec)
         mag_spec_ipol = mag_spec_ipol / np.linalg.norm(mag_spec_ipol, ord=2, axis=0)  # normalize
         print("Step 5: Interpolate spectrum to have a fixed number of samples")
-        tm.sleep(1)
+        if args.slow:
+            tm.sleep(1)
         hps_spec = copy.deepcopy(mag_spec_ipol)
 
         # Calculate HPS (Harmonic Product Spectrum)
         print("Step 6: Calculate HPS (Harmonic Product Spectrum)")
-        tm.sleep(1)
+        if args.slow:
+            tm.sleep(1)
         for i in range(NUM_HPS):
             tmp_hps_spec = np.multiply(hps_spec[:int(np.ceil(len(mag_spec_ipol) / (i + 1)))], mag_spec_ipol[::(i + 1)])
             if not any(tmp_hps_spec):
@@ -130,7 +143,8 @@ def callback(indata, frames, time, status, update_label):
         max_ind = np.argmax(hps_spec)
         max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE) / NUM_HPS
         print("Step 7: Getting the maximum frequency: " + str(max_freq))
-        tm.sleep(1)
+        if args.slow:
+            tm.sleep(1)
         closest_note, closest_pitch = find_closest_note(max_freq)
         max_freq = round(max_freq, 1)
         closest_pitch = round(closest_pitch, 1)
