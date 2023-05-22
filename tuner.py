@@ -38,7 +38,7 @@ def find_closest_note(pitch: float) -> Tuple[str, float]:
     # semitones = 12 * log2(pitch / CONCERT_PITCH)
     i = int(np.round(np.log2(pitch / CONCERT_PITCH) * 12))
     print("Step 8: Calculating the semitone = 12 * log2(pitch / CONCERT_PITCH): " + str(i))
-    tm.sleep(0.5)
+    # tm.sleep(0.5)
 
     # The '+ 9' term is used to correctly adjust the octave when dealing with negative indices.
     closest_note = ALL_NOTES[i % 12] + str(4 + (i + 9) // 12)
