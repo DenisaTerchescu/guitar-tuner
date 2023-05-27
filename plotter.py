@@ -13,7 +13,7 @@ def dft_plot_signal(file: str) -> None:
     print("Sample duration: " + str(sample_duration))
 
     plt.plot(time_axis[:len(time_axis)-1], list(zip(*absolute_frequency_spectrum[:len(recording)//2]))[0]) 
-    plt.ylabel('Magnitude|X(n)|')
+    plt.ylabel('Amplitude |X(n)|')
     plt.xlabel('Frequency [Hz]')
     plt.title('The signal spectrum')
     plt.show()
