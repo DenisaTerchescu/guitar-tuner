@@ -56,7 +56,8 @@ def find_closest_note(pitch: float) -> Tuple[str, float]:
 
 def callback(indata, frames, time, status, update_label):
     global tuner_running
-    global canvas, ax1, ax2
+    global canvas, axs
+
     if not tuner_running:
         return
 
@@ -76,6 +77,10 @@ def callback(indata, frames, time, status, update_label):
         # Add new samples and remove old samples
         callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0]))
         callback.window_samples = callback.window_samples[len(indata[:, 0]):]
+        
+        axs[0].cla()  # Clear the graph
+        axs[0].plot(callback.window_samples)  # Plot the new data
+        axs[0].set_title("Raw Audio Signal")
 
         # Calculate signal power and check if it's above the threshold
         signal_power = (np.linalg.norm(callback.window_samples, ord=2, axis=0)**2) / len(callback.window_samples)
@@ -88,6 +93,11 @@ def callback(indata, frames, time, status, update_label):
         hann_samples = callback.window_samples * HANN_WINDOW
 
         magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples) // 2])
+        
+        # Update the matplotlib graph
+        axs[1].cla()  # Clear the graph
+        axs[1].plot(magnitude_spec)  # Plot the new data
+        axs[1].set_title("Magnitude Spectrum (After FFT and Hanning Window)")
 
         # Remove anything below 62 Hz
         magnitude_spec[:int(62 / DELTA_FREQ)] = 0    
@@ -107,11 +117,12 @@ def callback(indata, frames, time, status, update_label):
             for i in range(ind_start, ind_end):
                 magnitude_spec[i] = magnitude_spec[i] if magnitude_spec[i] > WHITE_NOISE_THRESH * avg_energy_per_freq else 0
 
-            # Update the matplotlib graph
-        # Update the magnitude spectrum plot
-        ax1.cla()  # Clear the graph
-        ax1.plot(magnitude_spec)  # Plot the new data
+        # Update the matplotlib graph
+        axs[2].cla()  # Clear the graph
+        axs[2].plot(magnitude_spec)  # Plot the new data
+        axs[2].set_title("Octave Bands Energy (After applying noise threshold)")
 
+        canvas.draw()  # Redraw the graph
 
         # Interpolate spectrum to have a fixed number of samples
         mag_spec_ipol = np.interp(np.arange(0, len(magnitude_spec), 1 / NUM_HPS), np.arange(0, len(magnitude_spec)), magnitude_spec)
@@ -125,19 +136,19 @@ def callback(indata, frames, time, status, update_label):
                 break
             hps_spec = tmp_hps_spec
 
-
-         # Update the HPS plot
-        ax2.cla()  # Clear the graph
-        ax2.plot(hps_spec)  # Plot the new data
+        # Update the HPS plot
+        axs[3].cla()  # Clear the graph
+        axs[3].plot(hps_spec)  # Plot the new data
+        axs[3].set_title("Harmonic Product Spectrum (HPS)")
 
         canvas.draw()  # Redraw the graph
+
         max_ind = np.argmax(hps_spec)
         max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE) / NUM_HPS
 
         closest_note, closest_pitch = find_closest_note(max_freq)
         max_freq = round(max_freq, 1)
         closest_pitch = round(closest_pitch, 1)
-        
 
         callback.noteBuffer.insert(0, closest_note)
         callback.noteBuffer.pop()
@@ -146,7 +157,6 @@ def callback(indata, frames, time, status, update_label):
         if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
             print(f"Closest note: {closest_note} {max_freq} / {closest_pitch}")
             update_label(closest_note, max_freq, closest_pitch)
-
         else:
             print(f"Closest note: ...")
             update_label("..", "..", "..")
@@ -156,7 +166,7 @@ def callback(indata, frames, time, status, update_label):
 
 def main():
     global tuner_running
-    global canvas, ax1, ax2
+    global canvas, axs
 
     def update_label(note: str, max_freq: float, closest_pitch: float):
         if tuner_running:
@@ -199,15 +209,9 @@ def main():
     
     label.pack(pady=10)
 
-    # # Add the sing.png image to the window
-    # sing_img = Image.open("sing.png")
-    # sing_img.thumbnail((300, 300), Image.ANTIALIAS)
-    # sing_photo = ImageTk.PhotoImage(sing_img)
-    # sing_label = tk.CTkLabel(root, image=sing_photo)
-    # sing_label.pack()
-
-  # Create a matplotlib figure with 2 subplots
-    fig, (ax1, ax2) = plt.subplots(2, figsize=(5, 5))
+    # Create a matplotlib figure with 4 subplots
+    fig, axs = plt.subplots(4, figsize=(10,8))
+    plt.subplots_adjust(hspace=0.5)  # Adjust vertical spacing between subplots
 
     # Create a matplotlib canvas and add it as a tkinter widget
     canvas = FigureCanvasTkAgg(fig, master=root)
@@ -225,5 +229,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
