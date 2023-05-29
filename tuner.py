@@ -81,6 +81,9 @@ def callback(indata, frames, time, status, update_label):
         axs[0].cla()  # Clear the graph
         axs[0].plot(callback.window_samples)  # Plot the new data
         axs[0].set_title("Raw Audio Signal")
+        axs[0].set_xlabel("Audio samples")
+        axs[0].set_ylabel("Amplitude |X(n)|")
+
 
         # Calculate signal power and check if it's above the threshold
         signal_power = (np.linalg.norm(callback.window_samples, ord=2, axis=0)**2) / len(callback.window_samples)
@@ -98,6 +101,8 @@ def callback(indata, frames, time, status, update_label):
         axs[1].cla()  # Clear the graph
         axs[1].plot(magnitude_spec)  # Plot the new data
         axs[1].set_title("Magnitude Spectrum (After FFT and Hanning Window)")
+        axs[1].set_ylabel('Amplitude |X(n)|')
+        axs[1].set_xlabel('Frequency [Hz]')
 
 
         # Remove anything below 62 Hz
@@ -122,6 +127,9 @@ def callback(indata, frames, time, status, update_label):
         axs[2].cla()  # Clear the graph
         axs[2].plot(magnitude_spec)  # Plot the new data
         axs[2].set_title("Octave Bands Energy (After applying noise threshold)")
+        axs[2].set_ylabel('Amplitude |X(n)|')
+        axs[2].set_xlabel('Frequency [Hz]')
+
 
         canvas.draw()  # Redraw the graph
 
@@ -141,6 +149,9 @@ def callback(indata, frames, time, status, update_label):
         axs[3].cla()  # Clear the graph
         axs[3].plot(hps_spec)  # Plot the new data
         axs[3].set_title("Harmonic Product Spectrum (HPS)")
+        axs[3].set_ylabel('Amplitude')
+        axs[3].set_xlabel('HPS indices')
+
 
         canvas.draw()  # Redraw the graph
 
