@@ -84,9 +84,14 @@ def callback(indata, frames, time, status, update_label):
         callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0]))
         callback.window_samples = callback.window_samples[len(indata[:, 0]):]
         
-        axs[0].cla()  # Clear the graph
-        axs[0].plot(callback.window_samples)  # Plot the new data
-        axs[0].set_title("Raw Audio Signal")
+        axs[0][0].cla()  # Clear the graph
+        # axs[0][0].plot(callback.window_samples)  # Plot the new data
+        axs[0][0].plot(np.arange(len(callback.window_samples)) / 48000, callback.window_samples)
+        axs[0][0].set_title("Raw Audio Signal")
+        axs[0][0].set_ylabel("Amplitude")
+        axs[0][0].set_xlabel("Time (s)")
+
+
 
         # Calculate signal power and check if it's above the threshold
         # STEP 2: Calculate power of the signal
@@ -111,9 +116,12 @@ def callback(indata, frames, time, status, update_label):
         print("The magnitude spectrum is: ", magnitude_spec)
         
         # Update the matplotlib graph
-        axs[1].cla()  # Clear the graph
-        axs[1].plot(magnitude_spec)  # Plot the new data
-        axs[1].set_title("Magnitude Spectrum (After FFT and Hanning Window)")
+        axs[1][0].cla()  # Clear the graph
+        axs[1][0].plot(magnitude_spec)  # Plot the new data
+        axs[1][0].set_xlim([0, 10000])  # downed from 24000
+        axs[1][0].set_ylabel("Magnitude")
+        axs[1][0].set_xlabel("Frequency (Hz)")
+        axs[1][0].set_title("Magnitude Spectrum (After FFT and Hanning Window)")
 
 
         # STEP 5: Remove low frequencies
@@ -143,9 +151,12 @@ def callback(indata, frames, time, status, update_label):
         print("The magnitude spectrum after removing noise is: ", magnitude_spec)
 
         # Update the matplotlib graph
-        axs[2].cla()  # Clear the graph
-        axs[2].plot(magnitude_spec)  # Plot the new data
-        axs[2].set_title("Octave Bands Energy (After applying noise threshold)")
+        axs[2][0].cla()  # Clear the graph
+        axs[2][0].plot(magnitude_spec)  # Plot the new data
+        axs[2][0].set_xlim([0, 10000])  # downed from 24000
+        axs[2][0].set_ylabel("Magnitude")
+        axs[3][0].set_xlabel("Frequency (Hz)")  
+        axs[2][0].set_title("Octave Bands Energy (After applying noise threshold)")
 
         canvas.draw()  # Redraw the graph
 
@@ -163,14 +174,24 @@ def callback(indata, frames, time, status, update_label):
             if not any(tmp_hps_spec):
                 break
             hps_spec = tmp_hps_spec
+            if i < NUM_HPS - 1:
+                axs[i][1].cla()
+                axs[i][1].plot(hps_spec)  # Plot the new data
+                axs[i][1].set_xlim([0, 2500]) 
+                axs[i][1].set_ylabel("Magnitude")
+                axs[i][1].set_xlabel("Frequency (Hz)")
+                axs[i][1].set_title("HPS Spectra Downsampled with step: " + str(i + 1))
 
 
         print("The Harmonic Product Spectrum is: ", hps_spec)
 
         # Update the HPS plot
-        axs[3].cla()  # Clear the graph
-        axs[3].plot(hps_spec)  # Plot the new data
-        axs[3].set_title("Harmonic Product Spectrum (HPS)")
+        axs[3][0].cla()  # Clear the graph
+        axs[3][0].plot(hps_spec)  # Plot the new data
+        axs[3][0].set_xlim([0, 2500]) 
+        axs[3][0].set_ylabel("Magnitude")
+        axs[3][0].set_xlabel("Frequency (Hz)")
+        axs[3][0].set_title("Harmonic Product Spectrum (HPS)")
 
         canvas.draw()  # Redraw the graph
 
@@ -248,14 +269,15 @@ def main():
     label.pack(pady=10)
 
     # Create a matplotlib figure with 5 subplots
-    fig, axs = plt.subplots(4, figsize=(10,8))
-    plt.subplots_adjust(hspace=0.5)  # Adjust vertical spacing between subplots
+    fig, axs = plt.subplots(4, 2, figsize=(20,8))
+    plt.subplots_adjust(hspace=0.7,wspace=0.3)  # Adjust vertical spacing between subplots
 
     # Create a matplotlib canvas and add it as a tkinter widget
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.draw()
     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
+    
     # Create start/stop button
     button_text = tk.StringVar()
     button_text.set("Start Tuner")
